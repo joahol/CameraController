@@ -1,0 +1,31 @@
+﻿<Window x:Class="CameraController.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CameraController"
+        mc:Ignorable="d"
+        Title="CameraController" Height="400" Width="800" Background="White">
+    <Grid Margin="5,5,5,5" >
+
+        <StackPanel Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" HorizontalAlignment="Center">
+            <MediaElement Height="250" Width="600" >
+                <MediaElement.Effect>
+                    <DropShadowEffect/>
+                </MediaElement.Effect>
+            </MediaElement>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Label Name="lblPan" Content="PAN:"></Label>
+                    <Slider Name="sliderPAN" Width="200" Minimum="0" Maximum="180" Value="90" ValueChanged="sliderPAN_ValueChanged"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Label Name="lblTilt" Content="TILT:"></Label>
+                    <Slider Name="sliderTILT" Width="200" Minimum="0" Maximum="180" Value="90" ValueChanged="sliderTILT_ValueChanged"/>
+                </StackPanel>
+            </StackPanel>
+            <Label Name ="lbl1" Content="Label"/>
+        </StackPanel>
+
+    </Grid>
+</Window>
