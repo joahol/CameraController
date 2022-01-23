@@ -14,26 +14,68 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using OpenCvSharp;
+using OpenCvSharp.WpfExtensions;
+using System.ComponentModel;
 
 namespace CameraController
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         private const string serverAddress = "192.168.1.53";
         private const string serverPort = "80";
         private int TILT = 90;
         private int PAN = 90;
-       
+        private BackgroundWorker backgroundWorker;
+        private VideoCapture vidCapture;
+        
+
         static ClientWebSocket webSock = null;
         public MainWindow()
         {
             InitializeComponent();
+            vidCapture = new VideoCapture();
+            backgroundWorker = new BackgroundWorker { WorkerSupportsCancellation = true };
+            backgroundWorker.DoWork += backgroundVideoProcess;
             RunPanTiltClient();
+            Loaded += onLoaded;
+            Closing += onClose;
         }
 
+        private void onClose(object sender, CancelEventArgs e)
+        {
+            backgroundWorker.CancelAsync();
+            vidCapture.Dispose();
+        }
+
+        private void onLoaded(object sender, RoutedEventArgs e)
+        {
+            vidCapture.Open(0, VideoCaptureAPIs.ANY);
+            if (!vidCapture.IsOpened()) {
+                Close();
+                return;
+            }
+            backgroundWorker.RunWorkerAsync();
+        }
+
+        private void backgroundVideoProcess(object sender, DoWorkEventArgs e)
+
+        {
+            var worker = (BackgroundWorker)sender;
+            while (!worker.CancellationPending) {
+                using (var frameMat = vidCapture.RetrieveMat())
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        ImgVid.Source = frameMat.ToWriteableBitmap();
+                    }); 
+                }
+                Thread.Sleep(30);
+            }
+        }
 
         public static async Task RunPanTiltClient()
         {
